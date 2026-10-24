@@ -1,0 +1,10 @@
+{
+  "name": "devspeak-global",
+  "private": true,
+  "version": "2.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check assets/app.js && node --check assets/data.js && node --check assets/core.js && node --check sw.js"
+  }
+}

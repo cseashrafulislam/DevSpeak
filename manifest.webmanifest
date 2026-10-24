@@ -1,0 +1,9 @@
+{
+  "name": "DevSpeak — English for Global .NET Careers",
+  "short_name": "DevSpeak",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f6f8fc",
+  "theme_color": "#101c31",
+  "icons": [{"src": "/assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}]
+}
