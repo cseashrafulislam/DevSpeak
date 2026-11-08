@@ -1,4 +1,5 @@
 import {AI_PHASES,AI_DAYS,AI_EXAMPLES,AI_RESOURCES} from "./ai-curriculum.js";
+import {AI_EASY_EXPLAIN,AI_PHASE_GUIDES,AI_CAPSTONE_CHECKLIST} from "./ai-easy-guides.js";
 import {escapeHtml as h} from "./core.js";
 
 const AI_KEY="devspeak-ai-engineering-v1";
@@ -69,31 +70,47 @@ function dayGrid(){
 }
 function lessonDetails(){
   const d=AI_DAYS[ai.day-1],p=AI_PHASES[d.phase],ex=codeExample(d.day);
+  const guide=AI_PHASE_GUIDES[d.phase],simple=AI_EASY_EXPLAIN[d.day-1];
+  const capstone=d.day%30===0?AI_CAPSTONE_CHECKLIST[d.phase]:null;
   return '<section class="ai-lesson" id="aiLesson">'+
     '<div class="ai-lesson-head"><div>'+badge("PHASE "+(d.phase+1)+" · DAY "+d.day)+
     '<h2>'+h(d.title)+'</h2><p>'+h(p.bn)+'</p></div>'+
     badge(ai.completed.includes(d.day)?"✓ Completed":"In progress",ai.completed.includes(d.day)?"green":"")+'</div>'+
-    '<div class="ai-lesson-section"><span class="card-label">01 · CONCEPT / কী শিখবে</span>'+
-    '<p>'+h(d.concept)+'</p><p class="muted">Understand the input, the expected output, where this skill fits into an ERP, and the limitations before coding.</p></div>'+
-    '<div class="ai-lesson-section"><span class="card-label">02 · CODE LAB / হাতে-কলমে কোড</span>'+
-    '<p>'+h(d.lab)+'</p><ol class="ai-steps"><li>Create a small isolated C#, SQL or Python lab.</li>'+
-    '<li>Implement the requested feature with explicit types and input validation.</li>'+
-    '<li>Test normal input, empty/invalid input, and at least one boundary case.</li>'+
-    '<li>Save the code and record actual output or metrics.</li></ol></div>'+
+    '<div class="ai-beginner-note"><span class="card-label">একদম সহজ করে বুঝি</span>'+
+    '<p>'+h(simple)+'</p><small>আগে ধারণাটা বোঝো, তারপর কোড চালাও। আজকের lesson-এর জন্য ২–৩ ঘণ্টা রাখলেই হবে।</small></div>'+
+    '<div class="ai-lesson-section"><span class="card-label">01 · WHAT & WHY / আজ কী শিখবে?</span>'+
+    '<p>'+h(d.concept)+'</p><p class="muted">এই ধারণার ব্যবহার কোথায় হয়, কোন ইনপুট লাগে, ফল কী হতে পারে এবং সীমাবদ্ধতা কী—নিজের ভাষায় দুই লাইনে লেখো।</p></div>'+
+    '<div class="ai-lesson-section"><span class="card-label">02 · BEFORE CODING / আগে কী লাগবে?</span>'+
+    '<p>'+h(guide.environment)+'</p>'+
+    '<div class="ai-setup"><span class="ai-mini-heading">প্রথমবার হলে এই command চালাও (পরে একই project ব্যবহার করতে পারো)</span>'+
+    '<pre class="ai-code"><code>'+h(guide.start)+'</code></pre></div>'+
+    '<div class="ai-example-tip"><strong>Practice data:</strong> '+h(guide.input)+'</div></div>'+
+    '<div class="ai-lesson-section"><span class="card-label">03 · STEP BY STEP / হাতে-কলমে কী করবে?</span>'+
+    '<ol class="ai-steps"><li><strong>লক্ষ্য ঠিক করো:</strong> '+h(d.lab)+'</li>'+
+    '<li><strong>Sample input বানাও:</strong> '+h(guide.input)+'</li>'+
+    '<li><strong>ছোট করে কোড লেখো:</strong> প্রথমে ৫–১০টি record দিয়ে চালাও; type ও input validation রাখো।</li>'+
+    '<li><strong>ভুল input পরীক্ষা করো:</strong> empty/null, invalid value, duplicate এবং প্রয়োজন হলে অন্য tenant-এর record ব্যবহার করে test করো।</li>'+
+    '<li><strong>Result মিলাও:</strong> '+h(d.evidence)+'</li></ol>'+
+    '<div class="ai-time-box"><span>১৫ মিনিট: ধারণা বোঝো</span><span>৬০–৯০ মিনিট: কোড করো</span><span>২০ মিনিট: test + notes</span></div></div>'+
     (ex?'<div class="ai-lesson-section ai-code-section"><div class="ai-code-head"><div>'+
-      '<span class="card-label">03 · '+(ex.exact?"WORKED CODE EXAMPLE":"RELATED CHAPTER CODE EXAMPLE")+'</span>'+
+      '<span class="card-label">04 · '+(ex.exact?"COPY-PASTE CODE EXAMPLE":"RELATED CHAPTER CODE EXAMPLE")+'</span>'+
       '<h3>'+h(ex.example.title)+'</h3><small>'+h(ex.example.language)+'</small></div>'+
       action("Copy code","ai-copy", 'data-example-day="'+ex.example.day+'"',"button-small")+'</div>'+
-      (!ex.exact?'<p class="ai-code-note">This example belongs to Day '+ex.example.day+'. Your Day '+d.day+' coding task above is separate.</p>':"")+
+      (!ex.exact?'<p class="ai-code-note">এটি একই অধ্যায়ের Day '+ex.example.day+'-এর code। আজ Day '+d.day+'-এর আলাদা task উপরের ধাপ অনুসারে করবে।</p>':"")+
       '<p class="ai-code-note">'+h(ex.example.setup)+'</p><pre class="ai-code"><code>'+h(ex.example.code)+'</code></pre>'+
-      '<div class="notice">Expected: '+h(ex.example.expected)+'</div></div>':"")+
-    '<div class="ai-lesson-section"><span class="card-label">04 · PRACTICAL DELIVERABLE</span>'+
-    '<p><strong>'+h(d.evidence)+'</strong></p><p class="muted">Keep a screenshot/log, test result, or Git commit for your portfolio. A model-generated answer alone is not completion.</p></div>'+
-    '<div class="ai-lesson-section"><span class="card-label">05 · SELF-CHECK</span>'+
-    '<ul class="ai-checklist"><li>Can you explain today’s concept without reading?</li>'+
-    '<li>Does your code produce the expected output on valid input?</li>'+
-    '<li>Have you tried one invalid or boundary input?</li>'+
-    '<li>Did you record a limitation or security concern?</li></ul>'+
+      '<div class="notice">Code চালালে যা দেখার কথা: '+h(ex.example.expected)+'</div></div>':"")+
+    '<div class="ai-lesson-section"><span class="card-label">05 · EXPECTED RESULT / কী দেখাবে?</span>'+
+    '<p><strong>'+h(d.evidence)+'</strong></p><p class="muted">স্ক্রিনশট, test result বা Git commit রেখে দাও। কেবল AI দিয়ে কোড লিখিয়ে নেওয়া মানেই lesson শেষ নয়।</p></div>'+
+    '<div class="ai-lesson-section"><span class="card-label">06 · COMMON MISTAKES / কোথায় ভুল হতে পারে?</span>'+
+    '<div class="ai-pitfall">'+h(guide.common)+'</div><p class="muted">আরেকটু অনুশীলন: '+h(guide.tryNext)+'</p></div>'+
+    (capstone?'<div class="ai-lesson-section"><span class="card-label">07 · CAPSTONE PROJECT</span>'+
+      '<h3>'+h(p.project)+'</h3><p>'+h(p.goal)+'</p>'+
+      '<ul class="ai-checklist">'+capstone.map(x=>'<li>'+h(x)+'</li>').join("")+'</ul></div>':"")+
+    '<div class="ai-lesson-section"><span class="card-label">'+(capstone?"08":"07")+' · SELF-CHECK / নিজের পরীক্ষা</span>'+
+    '<ul class="ai-checklist"><li>আজকের বিষয়টি ২ লাইনে বাংলায় বুঝিয়ে বলতে পারি?</li>'+
+    '<li>নিজে কোড চালিয়ে ফল দেখেছি?</li>'+
+    '<li>একটি ভুল বা খালি input দিয়ে পরীক্ষা করেছি?</li>'+
+    '<li>কোথায় ভুল হতে পারে তা notes-এ লিখেছি?</li></ul>'+
     '<label class="ai-notes-label" for="aiNotes">Learning notes (saved only in this browser)</label>'+
     '<textarea class="ai-notes" id="aiNotes" rows="4" maxlength="3000" placeholder="What I learned, bugs, test results...">'+
       h(ai.notes[d.day]||"")+'</textarea>'+
@@ -107,7 +124,7 @@ export function renderAiEngineering(){
   const done=ai.completed.length,phase=Math.floor((ai.day-1)/30);
   return '<section class="ai-hero"><div><span class="eyebrow">NEW LEARNING TRACK · SEPARATE FROM ENGLISH</span>'+
     '<h1>AI Engineering <span>with C# + SQL Server</span></h1>'+
-    '<p>বাংলা ব্যাখ্যা, ১৮০ দিনের hands-on curriculum, daily code lab, ২১টি worked example, project milestones, self-check এবং browser-only progress।</p>'+
+    '<p>একদম সহজ বাংলায় ১৮০টি আলাদা tutorial, step-by-step coding, ২১টি worked example, common mistakes, ৬টি ERP project এবং নিজের progress tracking।</p>'+
     '<div class="hero-buttons">'+action("Continue Day "+ai.day,"ai-focus","","button-primary")+
     action("Export AI progress","ai-export","","button-secondary")+'</div></div>'+
     '<div class="ai-hero-stat"><strong>'+pct(done)+'%</strong><span>'+done+' / '+total+' lessons complete</span>'+

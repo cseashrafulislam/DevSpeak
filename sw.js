@@ -1,5 +1,5 @@
-const CACHE="devspeak-static-v2.1.0";
-const ASSETS=["/","/index.html","/manifest.webmanifest","/assets/styles.css","/assets/icon.svg","/assets/app.js","/assets/core.js","/assets/data.js","/assets/vocabulary-5000.js","/assets/ai-engineering.js","/assets/ai-curriculum.js"];
+const CACHE="devspeak-static-v2.2.0";
+const ASSETS=["/","/index.html","/manifest.webmanifest","/assets/styles.css","/assets/icon.svg","/assets/app.js","/assets/core.js","/assets/data.js","/assets/vocabulary-5000.js","/assets/ai-engineering.js","/assets/ai-curriculum.js","/assets/ai-easy-guides.js"];
 self.addEventListener("install",event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
 });

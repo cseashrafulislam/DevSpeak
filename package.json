@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "test": "node --test",
-    "check": "node --check assets/app.js && node --check assets/data.js && node --check assets/core.js && node --check assets/ai-engineering.js && node --check assets/ai-curriculum.js && node --check sw.js"
+    "check": "node --check assets/app.js && node --check assets/data.js && node --check assets/core.js && node --check assets/ai-engineering.js && node --check assets/ai-curriculum.js && node --check assets/ai-easy-guides.js && node --check sw.js"
   }
 }
 

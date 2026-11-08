@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {AI_DAYS,AI_PHASES,AI_EXAMPLES,AI_RESOURCES} from "../assets/ai-curriculum.js";
+import {AI_EASY_EXPLAIN,AI_PHASE_GUIDES,AI_CAPSTONE_CHECKLIST} from "../assets/ai-easy-guides.js";
 import {NAV} from "../assets/data.js";
 
 test("AI Engineering is an additional navigation entry, not a replacement",()=>{
@@ -36,4 +37,20 @@ test("worked code examples map to valid lesson days and supply runnable context"
   }
   assert.ok(AI_RESOURCES.length>=4);
   assert.ok(AI_RESOURCES.every(x=>x.url.startsWith("https://")&&x.title));
+});
+
+test("every AI lesson includes a distinct easy Bangla explanation and phase setup",()=>{
+  assert.equal(AI_EASY_EXPLAIN.length,180);
+  assert.equal(new Set(AI_EASY_EXPLAIN).size,180);
+  for(let i=0;i<180;i++){
+    assert.ok(AI_EASY_EXPLAIN[i].trim().length>=20,`Day ${i+1} lacks simple explanation`);
+    assert.ok(/[\u0980-\u09FF]/.test(AI_EASY_EXPLAIN[i]),`Day ${i+1} is not explained in Bangla`);
+  }
+  assert.equal(AI_PHASE_GUIDES.length,6);
+  assert.equal(AI_CAPSTONE_CHECKLIST.length,6);
+  for(let i=0;i<6;i++){
+    for(const field of ["environment","start","input","common","tryNext"])
+      assert.ok(AI_PHASE_GUIDES[i][field].trim().length>10,`Phase ${i+1} lacks ${field}`);
+    assert.equal(AI_CAPSTONE_CHECKLIST[i].length,4);
+  }
 });
