@@ -1,5 +1,6 @@
 import {PHASES,NAV,PHRASES,WORDS,TECH,SCENARIOS,GRAMMAR,INTERVIEW,WRITING} from "./data.js";
 import {STORAGE_KEY,freshState,safeState,dateKey,getStreak,getPhase,phaseIndex,getDayContent,getDueWords,reviewWord,wordsLearned,TASK_IDS,tasksDone,dayReady,answerCoverage,escapeHtml as h,safeJsonFile} from "./core.js";
+import {renderAiEngineering,handleAiAction,handleAiSubmit,aiSelectedDay} from "./ai-engineering.js";
 
 let state;
 try{state=safeState(JSON.parse(localStorage.getItem(STORAGE_KEY)));}catch{state=freshState();}
@@ -46,7 +47,7 @@ function renderDashboard(){
   </div><div class="daily-result"><span class="muted">${tasksDone(state,state.day)} of 4 missions finished</span>${btn("Open daily lesson →","go",'data-view="lesson"',"button-primary")}</div><div style="margin-top:12px">${bar(tasksDone(state,state.day)*25)}</div></div>
   <div class="card accent"><div class="card-label">YOUR CURRENT LEVEL</div><h3>${h(getPhase(state.day).name)}</h3><p class="muted">${h(getPhase(state.day).desc)}</p><div class="progress-label"><span>180-day journey</span><strong>${p}%</strong></div>${bar(p)}<div style="height:21px"></div><div class="notice">💡 <strong>Technical skill ≠ English skill.</strong> তুমি .NET ভালো জানো—তাই প্রতিদিন আলাদা Technical Fast Lane থাকবে। English শুধু তোমার জ্ঞান বোঝানোর মাধ্যম।</div><div style="height:21px"></div><h3 style="font-size:15px">Ready for global remote work?</h3><p class="muted">Stand-ups, meetings, PR reviews, bug reports, client demos—সব English + বাংলা।</p>${btn("Try a remote meeting →","go",'data-view="simulator"',"button-primary")}</div></div>
   ${section("Choose your practice", "নিজের সুবিধামতো যে কোনো module শুরু করো।")}
-  <div class="grid-3">${moduleCard("Aa","English from Zero","Hello → sentence → question. বাংলা ব্যাখ্যা ও pronunciation hints.","basics")}${moduleCard("♫","Listen & Repeat","Clear, slow English, with native browser voice.","listening")}${moduleCard("{ }",".NET Interview","Technical answers in simple and stronger English.","technical")}</div>`;
+  <div class="grid-3">${moduleCard("Aa","English from Zero","Hello → sentence → question. বাংলা ব্যাখ্যা ও pronunciation hints.","basics")}${moduleCard("♫","Listen & Repeat","Clear, slow English, with native browser voice.","listening")}${moduleCard("{ }",".NET Interview","Technical answers in simple and stronger English.","technical")}${moduleCard("✳","AI Engineering","180 separate AI lessons, C#/SQL/Python code labs and practical ERP projects.","ai-engineering")}</div>`;
 }
 function renderRoadmap(){
   const p=ui.phase,phase=PHASES[p];
@@ -167,11 +168,11 @@ function renderProgress(){
   <div class="card"><div class="notice">Your learning progress and writing drafts are stored in this browser's localStorage. Clearing site data may delete them. Browser speech recognition may use the browser provider's online service. This app does not upload your drafts or recordings to a DevSpeak server.</div><div class="action-row">${btn("⬇ Export progress JSON","export","","button-primary")}<label class="button-line" for="importFile" style="cursor:pointer">⬆ Import backup</label><input type="file" id="importFile" accept=".json,application/json" style="display:none">${btn("Reset my progress","reset","","button-line")}</div></div>`;
 }
 function render(){
-  const views={dashboard:renderDashboard,roadmap:renderRoadmap,lesson:renderLesson,basics:renderBasics,words:renderWords,grammar:renderGrammar,listening:renderListening,speaking:renderSpeech,technical:renderTechnical,simulator:renderSimulator,interview:renderInterview,writing:renderWriting,progress:renderProgress};
+  const views={dashboard:renderDashboard,roadmap:renderRoadmap,lesson:renderLesson,basics:renderBasics,words:renderWords,grammar:renderGrammar,listening:renderListening,speaking:renderSpeech,technical:renderTechnical,simulator:renderSimulator,interview:renderInterview,writing:renderWriting,progress:renderProgress,"ai-engineering":renderAiEngineering};
   $("nav").innerHTML=NAV.map(n=>`<button class="nav-item ${ui.view===n.id?"active":""}" type="button" data-action="go" data-view="${n.id}" ${ui.view===n.id?'aria-current="page"':""}><span class="nav-icon">${n.icon}</span>${h(n.label)}${n.new?'<span class="nav-new">NEW</span>':""}</button>`).join("");
   $("app").innerHTML=views[ui.view]();
   $("pageHeading").textContent=NAV.find(n=>n.id===ui.view)?.label||"Dashboard";
-  $("dayBadge").textContent=`DAY ${String(state.day).padStart(2,"0")} / 180`;
+  $("dayBadge").textContent=ui.view==="ai-engineering"?`AI DAY ${String(aiSelectedDay()).padStart(3,"0")} / 180`:`DAY ${String(state.day).padStart(2,"0")} / 180`;
   $("streakBadge").textContent=`🔥 ${getStreak(state.activityDates)}`;
   $("accentToggle").textContent="🔊 "+({"en-US":"US","en-GB":"UK","en-AU":"AU"})[state.accent];
 }
@@ -245,6 +246,7 @@ async function importBackup(file){
 }
 function eventClick(event){
   const el=event.target.closest("[data-action]");if(!el)return;
+  if(handleAiAction(el,render,toast))return;
   const {action,id,view,phase,day,task,text,quality,answer,custom}=el.dataset;
   if(action==="go")return setView(view);
   if(action==="phase"){ui.phase=Number(phase);return render();}
@@ -311,6 +313,7 @@ function eventChange(e){
   if(e.target.id==="importFile")importBackup(e.target.files?.[0]);
 }
 function eventSubmit(e){
+  if(handleAiSubmit(e,render))return;
   if(e.target.id==="wordSearchForm"){
     e.preventDefault();ui.wordFilter=$("wordSearch").value.trim().slice(0,100);ui.wordCategory=$("wordCategory").value;ui.wordCatalogPage=0;render();
   }
@@ -328,3 +331,4 @@ $("accentToggle").addEventListener("click",()=>{const accents=["en-US","en-GB","
 window.addEventListener("hashchange",()=>{const candidate=location.hash.slice(1);if(NAV.some(n=>n.id===candidate))setView(candidate);});
 render();
 if("serviceWorker" in navigator&&location.protocol==="https:")window.addEventListener("load",()=>navigator.serviceWorker.register("/sw.js").catch(()=>{}));
+

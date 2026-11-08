@@ -12,6 +12,7 @@ export const PHASES=[
 export const NAV=[
   {id:"dashboard",icon:"⌂",label:"Dashboard"},
   {id:"roadmap",icon:"▦",label:"180-Day Roadmap"},
+  {id:"ai-engineering",icon:"✳",label:"AI Engineering",new:true},
   {id:"lesson",icon:"✦",label:"Today's Lesson"},
   {id:"basics",icon:"Aa",label:"English from Zero",new:true},
   {id:"words",icon:"▤",label:"Words & Review"},
@@ -149,3 +150,4 @@ export const WRITING=[
  {name:"Introduce yourself by email",bn:"Remote team-এ পরিচয়",prompt:"Introduce your role, stack and how you like to collaborate.",example:"Hello team, I am a .NET developer based in Bangladesh. I work with ASP.NET Core, SQL Server and ERP systems. I look forward to collaborating, sharing clear updates and learning from everyone.",check:["developer","team","look"]},
  {name:"Follow up after an interview",bn:"ইন্টারভিউর পর ধন্যবাদ",prompt:"Thank the interviewer and restate your fit without exaggeration.",example:"Hello, thank you for the conversation today. I enjoyed learning about your product and the .NET team's challenges. My background in ERP workflows and SQL Server could be relevant. I look forward to the next steps.",check:["thank","team","look"]}
 ];
+
